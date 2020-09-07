@@ -102,6 +102,7 @@ namespace Sashimi.AzureResourceGroup.Tests
 
         [Test]
         [WindowsTest]
+        [RequiresPowerShell5OrAboveAttribute]
         public void Deploy_Ensure_Tools_Are_Configured()
         {
             var packagePath = TestEnvironment.GetTestPath("Packages", "AzureResourceGroup");
