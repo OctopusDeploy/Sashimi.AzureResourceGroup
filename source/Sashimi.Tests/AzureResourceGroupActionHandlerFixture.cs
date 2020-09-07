@@ -36,7 +36,9 @@ namespace Sashimi.AzureResourceGroup.Tests
 
             var resourceGroupName = SdkContext.RandomResourceName(nameof(AzureResourceGroupActionHandlerFixture), 60);
 
-            var credentials = SdkContext.AzureCredentialsFactory.FromServicePrincipal(clientId, clientSecret, tenantId,
+            var credentials = SdkContext.AzureCredentialsFactory.FromServicePrincipal(clientId,
+                                                                                      clientSecret,
+                                                                                      tenantId,
                                                                                       AzureEnvironment.AzureGlobalCloud);
 
             azure = Microsoft.Azure.Management.Fluent.Azure
@@ -83,6 +85,27 @@ namespace Sashimi.AzureResourceGroup.Tests
             var packagePath = TestEnvironment.GetTestPath("Packages", "AzureResourceGroup");
             var paramsFileContent = File.ReadAllText(Path.Combine(packagePath, "azure_website_params.json"));
             var parameters = JObject.Parse(paramsFileContent)["parameters"].ToString();
+
+            ActionHandlerTestBuilder.CreateAsync<AzureResourceGroupActionHandler, Program>()
+                                    .WithArrange(context =>
+                                                 {
+                                                     AddDefaults(context);
+                                                     context.Variables.Add(SpecialVariables.Action.AzureResourceGroup.ResourceGroupDeploymentMode, "Complete");
+                                                     context.Variables.Add("Octopus.Action.Azure.TemplateSource", "Inline");
+                                                     context.Variables.Add(SpecialVariables.Action.AzureResourceGroup.ResourceGroupTemplate, File.ReadAllText(Path.Combine(packagePath, "azure_website_template.json")));
+                                                     context.Variables.Add(SpecialVariables.Action.AzureResourceGroup.ResourceGroupTemplateParameters, parameters);
+
+                                                     context.WithFilesToCopy(packagePath);
+                                                 })
+                                    .Execute();
+        }
+
+        [Test]
+        public void Deploy_Ensure_Tools_Are_Configured()
+        {
+            var packagePath = TestEnvironment.GetTestPath("Packages", "AzureResourceGroup");
+            var paramsFileContent = File.ReadAllText(Path.Combine(packagePath, "azure_website_params.json"));
+            var parameters = JObject.Parse(paramsFileContent)["parameters"].ToString();
             var psScript = @"
 az --version
 Get-AzureEnvironment
@@ -119,7 +142,6 @@ az group list";
             context.Variables.Add("WebSite", SdkContext.RandomResourceName(String.Empty, 12));
             context.Variables.Add("Location", resourceGroup.RegionName);
             context.Variables.Add("AccountPrefix", SdkContext.RandomResourceName(String.Empty, 6));
-
         }
     }
 }
