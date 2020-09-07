@@ -2,6 +2,9 @@
 using System.IO;
 using System.Threading.Tasks;
 using Calamari.AzureResourceGroup;
+using Calamari.Common.Features.Deployment;
+using Calamari.Common.Features.Scripts;
+using Calamari.Common.Plumbing.Variables;
 using Calamari.Tests.Shared;
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
@@ -80,6 +83,10 @@ namespace Sashimi.AzureResourceGroup.Tests
             var packagePath = TestEnvironment.GetTestPath("Packages", "AzureResourceGroup");
             var paramsFileContent = File.ReadAllText(Path.Combine(packagePath, "azure_website_params.json"));
             var parameters = JObject.Parse(paramsFileContent)["parameters"].ToString();
+            var psScript = @"
+az --version
+Get-AzureEnvironment
+az group list";
 
             ActionHandlerTestBuilder.CreateAsync<AzureResourceGroupActionHandler, Program>()
                                     .WithArrange(context =>
@@ -89,6 +96,11 @@ namespace Sashimi.AzureResourceGroup.Tests
                                                      context.Variables.Add("Octopus.Action.Azure.TemplateSource", "Inline");
                                                      context.Variables.Add(SpecialVariables.Action.AzureResourceGroup.ResourceGroupTemplate, File.ReadAllText(Path.Combine(packagePath, "azure_website_template.json")));
                                                      context.Variables.Add(SpecialVariables.Action.AzureResourceGroup.ResourceGroupTemplateParameters, parameters);
+                                                     context.Variables.Add(KnownVariables.Package.EnabledFeatures, KnownVariables.Features.CustomScripts);
+                                                     context.Variables.Add(KnownVariables.Action.CustomScripts.GetCustomScriptStage(DeploymentStages.Deploy, ScriptSyntax.PowerShell), psScript);
+                                                     context.Variables.Add(KnownVariables.Action.CustomScripts.GetCustomScriptStage(DeploymentStages.PreDeploy, ScriptSyntax.CSharp), "Console.WriteLine(\"Hello from C#\");");
+                                                     context.Variables.Add(KnownVariables.Action.CustomScripts.GetCustomScriptStage(DeploymentStages.PostDeploy, ScriptSyntax.FSharp), "printfn \"Hello from F#\"");
+
                                                      context.WithFilesToCopy(packagePath);
                                                  })
                                     .Execute();
