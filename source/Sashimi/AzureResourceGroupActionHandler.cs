@@ -29,7 +29,7 @@ namespace Sashimi.AzureResourceGroup
                 builder.WithStagedPackageArgument();
             else
                 builder
-                    .WithDataFile(template, "template.json")
+                    .WithDataFile(template!, "template.json")
                     .WithDataFile(templateParameters, "parameters.json");
 
             return builder.Execute();
@@ -38,13 +38,13 @@ namespace Sashimi.AzureResourceGroup
             {
                 if (templateInPackage)
                 {
-                    return context.Variables.Get(SpecialVariables.Action.AzureResourceGroup.ResourceGroupTemplateParameters);
+                    return context.Variables.Get(SpecialVariables.Action.AzureResourceGroup.ResourceGroupTemplateParameters)!;
                 }
 
                 var parametersJson = context.Variables.GetRaw(SpecialVariables.Action.AzureResourceGroup.ResourceGroupTemplateParameters);
 
-                var parameterMetadata = AzureResourceGroupActionUtils.ExtractParameterTypes(template);
-                return AzureResourceGroupActionUtils.TemplateParameters(parametersJson, parameterMetadata, context.Variables);
+                var parameterMetadata = AzureResourceGroupActionUtils.ExtractParameterTypes(template!);
+                return AzureResourceGroupActionUtils.TemplateParameters(parametersJson!, parameterMetadata, context.Variables);
             }
         }
     }
