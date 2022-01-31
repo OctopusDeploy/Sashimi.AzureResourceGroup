@@ -117,6 +117,8 @@ Task("PublishCalamariProjects")
                         Framework = framework,
                         Runtime = runtime
 		    	    });
+		    	    
+		    	    CopyFiles("./global.json", $"{publishDir}/{calamariFlavour}/{platform}");
                 }
 
                 if(framework.StartsWith("netcoreapp"))
@@ -149,6 +151,8 @@ Task("PublishSashimiTestProjects")
 		    	    	Configuration = configuration,
                         OutputDirectory = $"{publishDir}/{sashimiFlavour}"
 		    	    });
+		    	    
+		    	    CopyFiles("./global.json", $"{publishDir}/{sashimiFlavour}");
                 }
 
                 RunPublish();

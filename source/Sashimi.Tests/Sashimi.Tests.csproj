@@ -3,7 +3,7 @@
     <RootNamespace>Sashimi.AzureResourceGroup.Tests</RootNamespace>
     <AssemblyName>Sashimi.AzureResourceGroup.Tests</AssemblyName>
     <IsPackable>false</IsPackable>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Calamari\Calamari.csproj" />
