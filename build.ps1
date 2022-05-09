@@ -193,3 +193,4 @@ Write-Host "Installing cake modules using the --bootstrap argument"
 Write-Host "Running build script..."
 Invoke-Expression "& `"$CAKE_EXE`" `"$Script`" -target=`"$Target`" -configuration=`"$Configuration`" -verbosity=`"$Verbosity`" $UseMono $UseDryRun $UseExperimental $ScriptArgs"
 exit $LASTEXITCODE
+
