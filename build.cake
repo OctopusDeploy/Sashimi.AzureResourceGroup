@@ -121,7 +121,7 @@ Task("PublishCalamariProjects")
 		    	    CopyFiles("./global.json", $"{publishDir}/{calamariFlavour}/{platform}");
                 }
 
-                if(framework.Equals("net5.0"))
+                if(framework.Equals("net6.0"))
                 {
                     var runtimes = XmlPeek(project, "Project/PropertyGroup/RuntimeIdentifiers").Split(';');
                     foreach(var runtime in runtimes)
